@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy-dev:
-    name: 'Deploy -> dev'
+    name: 'Deploy dev'
     runs-on: ubuntu-latest
     environment: 'dev'
     steps:
@@ -27,7 +27,7 @@ jobs:
           publish-profile: ${{secrets.publish_profile}}
 
   deploy-staging:
-    name: 'Deploy -> staging'
+#    name: 'Deploy staging'
     runs-on: ubuntu-latest
     environment: 'staging'
     needs: [deploy-dev]
