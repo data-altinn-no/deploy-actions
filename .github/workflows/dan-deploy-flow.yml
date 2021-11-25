@@ -64,8 +64,8 @@ jobs:
         working-directory: ${{ inputs.function_project_path }}
         shell: bash
 
-      - name: 'Upload artifact: ' ${{ inputs.artifact_name }}
-        if: inputs.upload == 'true'
+      - name: Upload artifact ${{ inputs.artifact_name }}
+#      - name: ${{ format('Upload artifact: {0}', inputs.artifact_name) }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ inputs.artifact_name }}
