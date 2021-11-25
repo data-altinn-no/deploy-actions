@@ -121,9 +121,15 @@ jobs:
     environment: 'staging'
     needs: [swap-staging-prod]
     steps:
-      - name: 'Redeploy to staging'
-        uses: Altinn/dan-deploy-actions/composite/deploy@feature/composite-actions
+      - name: 'Download artifact for redeploy to staging'
+        uses: actions/download-artifact@v2
         with:
-          function_app_name: ${{ secrets.FUNCTIONAPP_NAME }}
-          publish_profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_CREDS }}
-
+          name: ${{ inputs.artifact_name }}
+          path: './downloaded-app'
+      - name: 'Redeploy artifact to staging'
+        uses: azure/functions-action@v1
+        with:
+          app-name: ${{secrets.function_app_name}}
+          package: './downloaded-app'
+          publish-profile: ${{secrets.publish_profile}}
+        
