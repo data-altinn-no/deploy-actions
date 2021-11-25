@@ -33,6 +33,10 @@ on:
         required: true
       azure_artifact_pat:
         required: true
+      azure_credentials:
+        required: true
+      resource_group_prod:
+        required: true
 
 jobs:
   build:
@@ -95,4 +99,31 @@ jobs:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
           publish-profile: ${{secrets.publish_profile}}
+
+  swap-staging-prod:
+    runs-on: ubuntu-latest
+    environment: 'production'
+    needs: [deploy-staging]
+    steps:
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.azure_credentials }}
+      - name: 'Swap staging and production'
+        run: |
+          az webapp deployment slot swap -g '${{ secrets.resource_group_prod }}' -n '${{ secrets.function_app_name }}' --slot 'staging' --target-slot 'production'
+      - name: 'Azure logout'
+        run: |
+          az logout
+
+  redeploy-staging:
+    runs-on: ubuntu-latest
+    environment: 'staging'
+    needs: [swap-staging-prod]
+    steps:
+      - name: 'Redeploy to staging'
+        uses: Altinn/dan-deploy-actions/composite/deploy@feature/composite-actions
+        with:
+          function_app_name: ${{ secrets.FUNCTIONAPP_NAME }}
+          publish_profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_CREDS }}
 
