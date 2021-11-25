@@ -1,0 +1,106 @@
+name: Reusable dan deploy workflow
+
+on:
+  workflow_call:
+    inputs:
+      dotnet_version:
+        type: string
+        required: false
+        default: '6.0.x'
+      azure_artifacts_feed_url:
+        type: string
+        default: 'https://pkgs.dev.azure.com/nadobe/Nadobe/_packaging/Packages/nuget/v3/index.json'
+        required: false
+      build_configuration:
+        type: string
+        default: 'Release'
+        required: false
+      root_solution_path:
+        type: string
+        default: './'
+        required: false
+      artifact_name:
+        type: string
+        default: 'artifact'
+        required: false
+      function_project_path:
+        type: string
+        required: true
+    secrets:
+      function_app_name:
+        required: true
+      publish_profile:
+        required: true
+      azure_artifact_pat:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Get the latest source'
+        uses: actions/checkout@v2
+      
+      #        - name: 'Setup dotnet'
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+          source-url: ${{ inputs.azure_artifacts_feed_url }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.azure_artifact_pat }}
+
+      - name: 'Dotnet restore, build & test'
+        run: |
+          dotnet restore
+          dotnet build --no-restore
+          dotnet test --no-build --verbosity normal
+        working-directory: ${{ inputs.root_solution_path }}
+        shell: bash
+
+      - name: 'Dotnet build and publish Function App for Release'
+        run: |
+          dotnet build --configuration '${{ inputs.build_configuration }}'
+          dotnet publish -c '${{ inputs.build_configuration }}' --no-restore -o './published-app'
+        working-directory: ${{ inputs.function_project_path }}
+        shell: bash
+
+      - name: 'Upload artifact: ' ${{ inputs.artifact_name }}
+        if: inputs.upload == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ inputs.function_project_path }}/published-app
+  
+  deploy-dev:
+    runs-on: ubuntu-latest
+    environment: 'dev'
+    steps:
+      - name: 'Download artifact for dev'
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: './downloaded-app'
+      - name: 'Deploy artifact to dev'
+        uses: azure/functions-action@v1
+        with:
+          app-name: ${{secrets.function_app_name}}
+          package: './downloaded-app'
+          publish-profile: ${{secrets.publish_profile}}
+  
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: 'staging'
+    needs: [deploy-dev]
+    steps:
+      - name: 'Download artifact for staging'
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: './downloaded-app'
+      - name: 'Deploy artifact to staging'
+        uses: azure/functions-action@v1
+        with:
+          app-name: ${{secrets.function_app_name}}
+          package: './downloaded-app'
+          publish-profile: ${{secrets.publish_profile}}
+
