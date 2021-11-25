@@ -51,7 +51,7 @@ jobs:
           dotnet build --no-restore
           dotnet test --no-build --verbosity normal
         working-directory: ${{ inputs.root_solution_path }}
-      - name: 'Dotnet build and publish Function App with configuration ' ${{ inputs.build_configuration }}
+      - name: Dotnet build and publish Function App with configuration ${{ inputs.build_configuration }}
         run: |
           dotnet build --configuration '${{ inputs.build_configuration }}'
           dotnet publish -c '${{ inputs.build_configuration }}' --no-restore -o './published-app'
