@@ -7,10 +7,6 @@ on:
         type: string
         required: false
         default: '6.0.x'
-      azure_artifacts_feed_url:
-        type: string
-        default: 'https://pkgs.dev.azure.com/nadobe/Nadobe/_packaging/Packages/nuget/v3/index.json'
-        required: false
       build_configuration:
         type: string
         default: 'Release'
@@ -26,12 +22,18 @@ on:
       function_project_path:
         type: string
         required: true
+      staging_slot_name:
+        type: string
+        required: false
+        default: 'staging'
+      production_slot_name:
+        type: string
+        required: false
+        default: 'production'
     secrets:
       function_app_name:
         required: true
       publish_profile:
-        required: true
-      azure_artifact_pat:
         required: true
       azure_credentials:
         required: true
@@ -46,9 +48,6 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
-          source-url: ${{ inputs.azure_artifacts_feed_url }}
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.azure_artifact_pat }}
       - name: 'Dotnet restore, build & test'
         run: |
           dotnet restore
@@ -111,7 +110,7 @@ jobs:
           creds: ${{ secrets.azure_credentials }}
       - name: 'Swap staging and production'
         run: |
-          az webapp deployment slot swap -g '${{ secrets.resource_group_prod }}' -n '${{ secrets.function_app_name }}' --slot 'staging' --target-slot 'production'
+          az webapp deployment slot swap -g '${{ secrets.resource_group_prod }}' -n '${{ secrets.function_app_name }}' --slot '${{ inputs.staging_slot_name }}' --target-slot '${{ inputs.production_slot_name }}'
       - name: 'Azure logout'
         run: |
           az logout
