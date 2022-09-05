@@ -30,8 +30,8 @@ on:
         type: string
         required: false
         default: 'production'
-      runk6tests:
-        type: bool
+      run_e2e_tests:
+        type: boolean
         required: false
         default: false
     secrets:
@@ -88,7 +88,7 @@ jobs:
 
   post-deploy-dev:
     runs-on: ubuntu-latest
-    if: inputs.runk6tests
+    if: inputs.run_e2e_tests
     environment: 'dev'
     needs: [deploy-dev]
     steps:
