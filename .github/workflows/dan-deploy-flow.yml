@@ -126,7 +126,7 @@ jobs:
         uses: grafana/k6-action@v0.2.0
         with:
           filename: postDeployTests.js
-          flags: --quiet --log-output=stdout
+          flags: --quiet --log-output=stdout --include-system-env-vars
       - name: 'Remove Certificate files'
         run: rm cert.pem key.pem
 
