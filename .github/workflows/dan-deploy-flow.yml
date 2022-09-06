@@ -116,13 +116,18 @@ jobs:
             az keyvault secret download --vault-name ${{ secrets.kvname }} -n "digdir-cert" -e base64 -f "cert.pfx"
             openssl pkcs12 -in cert.pfx -nokeys -clcerts -password pass: -out cert.pem
             openssl pkcs12 -in cert.pfx -nocerts -password pass: -out key.pem -nodes
-            echo subscriptions=$(az keyvault secret show --name "dev-subscriptions" --vault-name ${{ secrets.kvname }} --query "value") >> $GITHUB_ENV
-            echo tokenUsername=$(az keyvault secret show --name "TokenUsername" --vault-name ${{ secrets.kvname }} --query "value") >> $GITHUB_ENV
-            echo tokenPassword=$(az keyvault secret show --name "TokenPassword" --vault-name ${{ secrets.kvname }} --query "value") >> $GITHUB_ENV
+            subscriptions=$(az keyvault secret show --name "dev-subscriptions" --vault-name ${{ secrets.kvname }} --query "value")
+            echo "::add-mask::$subscriptions"
+            echo subscriptions=$subscriptions >> $GITHUB_ENV
+            tokenUsername=$(az keyvault secret show --name "TokenUsername" --vault-name ${{ secrets.kvname }} --query "value") 
+            echo "::add-mask::$tokenUsername"
+            tokenUsername=$tokenUsername >> $GITHUB_ENV
+            tokenPassword=$(az keyvault secret show --name "TokenPassword" --vault-name ${{ secrets.kvname }} --query "value")
+            echo "::add-mask::$tokenPassword"
+            tokenPassword=$tokenPassword >> $GITHUB_ENV
             echo certificate=cert.pem >> $GITHUB_ENV
             echo key=key.pem >> $GITHUB_ENV
             echo useToken=true >> $GITHUB_ENV
-            echo "::add-mask::$subscriptions"
             echo "::add-mask::$tokenUsername"
             echo "::add-mask::$tokenPassword"
       - name: 'Run K6 tests'
