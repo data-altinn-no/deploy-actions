@@ -128,8 +128,6 @@ jobs:
             echo certificate=cert.pem >> $GITHUB_ENV
             echo key=key.pem >> $GITHUB_ENV
             echo useToken=true >> $GITHUB_ENV
-            echo "::add-mask::$tokenUsername"
-            echo "::add-mask::$tokenPassword"
       - name: 'Run K6 tests'
         uses: grafana/k6-action@v0.2.0
         with:
@@ -140,6 +138,7 @@ jobs:
         with:
           name: 'test-results'
           path: 'junit.xml'
+          reporter: jest-junit
       - name: 'Remove Certificate files'
         run: rm cert.pem key.pem
 
