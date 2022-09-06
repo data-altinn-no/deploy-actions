@@ -134,11 +134,9 @@ jobs:
           filename: postDeployTests.js
           flags: --quiet --log-output=stdout --include-system-env-vars
       - name: 'K6 results'
-        uses: dorny/test-reporter@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
         with:
-          name: 'test-results'
-          path: 'junit.xml'
-          reporter: jest-junit
+          junit_files: 'junit.xml'
       - name: 'Remove Certificate files'
         run: rm cert.pem key.pem
 
