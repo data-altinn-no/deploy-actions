@@ -125,10 +125,10 @@ jobs:
             echo subscriptions=$subscriptions >> $GITHUB_ENV
             tokenUsername=$(az keyvault secret show --name "TokenUsername" --vault-name ${{ secrets.kvname }} --query "value") 
             echo "::add-mask::$tokenUsername"
-            tokenUsername=$tokenUsername >> $GITHUB_ENV
+            echo tokenUsername=$tokenUsername >> $GITHUB_ENV
             tokenPassword=$(az keyvault secret show --name "TokenPassword" --vault-name ${{ secrets.kvname }} --query "value")
             echo "::add-mask::$tokenPassword"
-            tokenPassword=$tokenPassword >> $GITHUB_ENV
+            echo tokenPassword=$tokenPassword >> $GITHUB_ENV
             echo certificate=cert.pem >> $GITHUB_ENV
             echo key=key.pem >> $GITHUB_ENV
             echo useToken=true >> $GITHUB_ENV
