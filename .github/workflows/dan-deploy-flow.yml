@@ -127,6 +127,11 @@ jobs:
         with:
           filename: postDeployTests.js
           flags: --quiet --log-output=stdout --include-system-env-vars
+      - name: 'K6 results'
+        uses: dorny/test-reporter@v1
+        with:
+          name: 'test-results'
+          path: 'junit.xml'
       - name: 'Remove Certificate files'
         run: rm cert.pem key.pem
 
