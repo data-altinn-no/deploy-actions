@@ -116,12 +116,12 @@ jobs:
             az keyvault secret download --vault-name ${{ secrets.kvname }} -n "digdir-cert" -e base64 -f "cert.pfx"
             openssl pkcs12 -in cert.pfx -nokeys -clcerts -password pass: -out cert.pem
             openssl pkcs12 -in cert.pfx -nocerts -password pass: -out key.pem -nodes
-            subscriptions=$(az keyvault secret show --name "dev-subscriptions" --vault-name ${{ secrets.kvname }} --query "value")
-            tokenUsername=$(az keyvault secret show --name "TokenUsername" --vault-name ${{ secrets.kvname }} --query "value")
-            tokenPassword=$(az keyvault secret show --name "TokenPassword" --vault-name ${{ secrets.kvname }} --query "value")
-            certificate=cert.pem
-            key=key.pem
-            useToken=true
+            export subscriptions=$(az keyvault secret show --name "dev-subscriptions" --vault-name ${{ secrets.kvname }} --query "value")
+            export tokenUsername=$(az keyvault secret show --name "TokenUsername" --vault-name ${{ secrets.kvname }} --query "value")
+            export tokenPassword=$(az keyvault secret show --name "TokenPassword" --vault-name ${{ secrets.kvname }} --query "value")
+            export certificate=cert.pem
+            export key=key.pem
+            export useToken=true
       - name: 'Run K6 tests'
         uses: grafana/k6-action@v0.2.0
         with:
