@@ -34,6 +34,10 @@ on:
         type: boolean
         required: false
         default: false
+      environment:
+        type: string
+        required: false
+        default: 'dev'
     secrets:
       function_app_name:
         required: true
@@ -128,6 +132,7 @@ jobs:
             echo certificate=cert.pem >> $GITHUB_ENV
             echo key=key.pem >> $GITHUB_ENV
             echo useToken=true >> $GITHUB_ENV
+            echo env=${{ inputs.environment }} >> $GITHUB_ENV
       - name: 'Run K6 tests'
         uses: grafana/k6-action@v0.2.0
         with:
