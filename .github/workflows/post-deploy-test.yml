@@ -17,7 +17,6 @@ jobs:
   post-deploy-dev:
     runs-on: ubuntu-latest
     environment: 'dev'
-    needs: [deploy-dev]
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
