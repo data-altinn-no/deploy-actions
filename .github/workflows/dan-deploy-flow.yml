@@ -93,58 +93,13 @@ jobs:
           publish-profile: ${{secrets.publish_profile}}
 
   post-deploy-dev:
-    runs-on: ubuntu-latest
     if: inputs.run_e2e_tests
-    environment: 'dev'
-    needs: [deploy-dev]
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-        with:
-          repository: data-altinn-no/k6-tests
-      - name: 'Install K6'
-        run: |
-          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install k6
-      - name: 'Azure login'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Setup environment variables'
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.30.0
-          inlineScript: |
-            az keyvault secret download --vault-name ${{ secrets.kvname }} -n "digdir-cert" -e base64 -f "cert.pfx"
-            openssl pkcs12 -in cert.pfx -nokeys -clcerts -password pass: -out cert.pem
-            openssl pkcs12 -in cert.pfx -nocerts -password pass: -out key.pem -nodes
-            subscriptions=$(az keyvault secret show --name "dev-subscriptions" --vault-name ${{ secrets.kvname }} --query "value")
-            echo "::add-mask::$subscriptions"
-            echo subscriptions=$subscriptions >> $GITHUB_ENV
-            tokenUsername=$(az keyvault secret show --name "TokenUsername" --vault-name ${{ secrets.kvname }} --query "value") 
-            echo "::add-mask::$tokenUsername"
-            echo tokenUsername=$tokenUsername >> $GITHUB_ENV
-            tokenPassword=$(az keyvault secret show --name "TokenPassword" --vault-name ${{ secrets.kvname }} --query "value")
-            echo "::add-mask::$tokenPassword"
-            echo tokenPassword=$tokenPassword >> $GITHUB_ENV
-            echo certificate=cert.pem >> $GITHUB_ENV
-            echo key=key.pem >> $GITHUB_ENV
-            echo useToken=true >> $GITHUB_ENV
-            echo env=${{ inputs.environment }} >> $GITHUB_ENV
-      - name: 'Run K6 tests'
-        uses: grafana/k6-action@v0.2.0
-        with:
-          filename: postDeployTests.js
-          flags: --quiet --log-output=stdout --include-system-env-vars
-      - name: 'K6 results'
-        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
-        with:
-          junit_files: 'junit.xml'
-      - name: 'Remove Certificate files'
-        run: rm cert.pem key.pem
-
+    uses: data-altinn-no/deploy-actions/.github/workflows/post-deploy-test.yml@main
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+      kvname: ${{ secrets.KVNAME }}
   
   deploy-staging:
     runs-on: ubuntu-latest
