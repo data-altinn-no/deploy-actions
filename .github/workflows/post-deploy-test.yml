@@ -53,6 +53,7 @@ jobs:
             echo key=key.pem >> $GITHUB_ENV
             echo useToken=true >> $GITHUB_ENV
             echo env=${{ inputs.environment }} >> $GITHUB_ENV
+            echo GODEBUG=http2client=0 >> $GITHUB_ENV
       - name: 'Run K6 tests'
         uses: grafana/k6-action@v0.2.0
         with:
