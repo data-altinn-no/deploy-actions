@@ -95,6 +95,7 @@ jobs:
   post-deploy-dev:
     if: inputs.run_e2e_tests
     uses: data-altinn-no/deploy-actions/.github/workflows/post-deploy-test.yml@main
+    needs: [deploy-dev]
     with:
       environment: ${{ inputs.environment }}
     secrets:
