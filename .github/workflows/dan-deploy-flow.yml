@@ -45,6 +45,9 @@ on:
         required: true
       azure_credentials:
         required: true
+      # This is kept here for compatibility reasons, no longer used
+      azure_artifact_pat:
+        required: false
       resource_group_prod:
         required: true
       kvname:
