@@ -57,7 +57,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
@@ -73,7 +73,7 @@ jobs:
           dotnet publish -c '${{ inputs.build_configuration }}' --no-restore -o './published-app'
         working-directory: ${{ inputs.function_project_path }}
       - name: Upload artifact '${{ inputs.artifact_name }}'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.function_project_path }}/published-app
@@ -84,7 +84,7 @@ jobs:
     needs: [build]
     steps:
       - name: 'Download artifact for dev'
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
@@ -111,7 +111,7 @@ jobs:
     needs: [deploy-dev]
     steps:
       - name: 'Download artifact for staging'
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
@@ -121,7 +121,17 @@ jobs:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
           publish-profile: ${{secrets.publish_profile}}
-
+  
+  post-deploy-staging:
+    if: inputs.run_e2e_tests
+    uses: data-altinn-no/deploy-actions/.github/workflows/post-deploy-test.yml@main
+    needs: [deploy-staging]
+    with:
+      environment: ${{ inputs.environment }}
+    secrets:
+      azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+      kvname: ${{ secrets.KVNAME }}
+      
   swap-staging-prod:
     runs-on: ubuntu-latest
     environment: 'production'
@@ -144,7 +154,7 @@ jobs:
     needs: [swap-staging-prod]
     steps:
       - name: 'Download artifact for redeploy to staging'
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
