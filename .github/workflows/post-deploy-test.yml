@@ -16,10 +16,10 @@ on:
 jobs:
   post-deploy-dev:
     runs-on: ubuntu-latest
-    environment: 'dev'
+    environment: ${{ inputs.environment }}
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: data-altinn-no/k6-tests
       - name: 'Install K6'
@@ -40,7 +40,7 @@ jobs:
             az keyvault secret download --vault-name ${{ secrets.kvname }} -n "digdir-cert" -e base64 -f "cert.pfx"
             openssl pkcs12 -in cert.pfx -nokeys -clcerts -password pass: -out cert.pem
             openssl pkcs12 -in cert.pfx -nocerts -password pass: -out key.pem -nodes
-            subscriptions=$(az keyvault secret show --name "dev-subscriptions" --vault-name ${{ secrets.kvname }} --query "value")
+            subscriptions=$(az keyvault secret show --name "${{ inputs.environment }}-subscriptions" --vault-name ${{ secrets.kvname }} --query "value")
             echo "::add-mask::$subscriptions"
             echo subscriptions=$subscriptions >> $GITHUB_ENV
             tokenUsername=$(az keyvault secret show --name "TokenUsername" --vault-name ${{ secrets.kvname }} --query "value")
@@ -60,7 +60,7 @@ jobs:
           filename: postDeployTests.js
           flags: --quiet --log-output=stdout --include-system-env-vars
       - name: 'K6 results'
-        uses: EnricoMi/publish-unit-test-result-action@v2.0.0
+        uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           junit_files: 'junit.xml'
       - name: 'Remove Certificate files'
