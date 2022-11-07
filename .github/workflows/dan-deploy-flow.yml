@@ -34,10 +34,6 @@ on:
         type: boolean
         required: false
         default: false
-      environment:
-        type: string
-        required: false
-        default: 'dev'
     secrets:
       function_app_name:
         required: true
@@ -100,7 +96,7 @@ jobs:
     uses: data-altinn-no/deploy-actions/.github/workflows/post-deploy-test.yml@main
     needs: [deploy-dev]
     with:
-      environment: ${{ inputs.environment }}
+      environment: 'dev'
     secrets:
       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
       kvname: ${{ secrets.KVNAME }}
@@ -127,7 +123,7 @@ jobs:
     uses: data-altinn-no/deploy-actions/.github/workflows/post-deploy-test.yml@main
     needs: [deploy-staging]
     with:
-      environment: ${{ inputs.environment }}
+      environment: 'staging'
     secrets:
       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
       kvname: ${{ secrets.KVNAME }}
