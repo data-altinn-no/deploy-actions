@@ -14,7 +14,7 @@ on:
         required: true
 
 jobs:
-  post-deploy-dev:
+  post-deploy-tests:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -54,7 +54,7 @@ jobs:
             echo useToken=true >> $GITHUB_ENV
             echo env=${{ inputs.environment }} >> $GITHUB_ENV
             echo GODEBUG=http2client=0 >> $GITHUB_ENV
-      - name: 'Run K6 tests'
+      - name: "Run K6 tests (${{ inputs.environment }})"
         uses: grafana/k6-action@v0.2.0
         with:
           filename: postDeployTests.js
