@@ -100,11 +100,16 @@ jobs:
     secrets:
       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
       kvname: ${{ secrets.KVNAME }}
+      
+  dev-complete:  
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Dev deploy completed succesfully 🎉"
   
   deploy-staging:
     runs-on: ubuntu-latest
     environment: 'staging'
-    needs: [post-deploy-dev]
+    needs: [dev-complete]
     steps:
       - name: 'Download artifact for staging'
         uses: actions/download-artifact@v3
@@ -128,10 +133,15 @@ jobs:
       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
       kvname: ${{ secrets.KVNAME }}
       
+  staging-complete:  
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Staging deploy completed succesfully 🎉"    
+      
   swap-staging-prod:
     runs-on: ubuntu-latest
     environment: 'production'
-    needs: [post-deploy-staging]
+    needs: [staging-complete]
     steps:
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
