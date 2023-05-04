@@ -36,18 +36,19 @@ jobs:
         uses: azure/CLI@v1
         with:
           azcliversion: 2.30.0
-          inlineScript: |          
-            $keyVaults = @{
-              dev = "kv-nadobe-test-dev"
-              qa = "kv-nadobe-test-qa"
-              staging = "kv-nadobe-prod-staging"
-              prod = "kv-nadobe-prod-prod"
-            }
-            $env = ${{ inputs.environment }}
-            if (!$keyVaults.ContainsKey($env)) {
-              Write-Host "Key '$env' is not a valid environment"
-            }
-            $kv = $keyVaults[$env]
+          inlineScript: |   
+            declare -A keyVaults=(
+              ["dev"]="kv-nadobe-test-dev"
+              ["qa"]="kv_nadobe-test-qa"
+              ["staging"]="kv-nadobe-prod-staging"
+              ["prod"]="kv-nadobe-prod-prod"
+            )
+            env=${{ inputs.environment }}
+            if [ -z "${keyVaults[$env]}" ]; then
+              echo "Key '$env' is not a valid environment"
+              exit 1
+            fi
+            kv=${keyVaults[$env]}
             az keyvault secret download --vault-name $kv -n "digdir-cert" -e base64 -f "cert.pfx"
             openssl pkcs12 -in cert.pfx -nokeys -clcerts -password pass: -out cert.pem
             openssl pkcs12 -in cert.pfx -nocerts -password pass: -out key.pem -nodes
