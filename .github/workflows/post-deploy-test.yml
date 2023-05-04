@@ -42,11 +42,12 @@ jobs:
               qa = "kv-nadobe-test-qa"
               staging = "kv-nadobe-prod-staging"
               prod = "kv-nadobe-prod-prod"
-            }          
-            if (!$keyVaults.ContainsKey($keyToCheck)) {
-              Write-Host "Key '$keyToCheck' is not a valid environment"
             }
-            $kv = $keyVaults[${{ inputs.environment }}]
+            $env = ${{ inputs.environment }}
+            if (!$keyVaults.ContainsKey($env)) {
+              Write-Host "Key '$env' is not a valid environment"
+            }
+            $kv = $keyVaults[$env]
             az keyvault secret download --vault-name $kv -n "digdir-cert" -e base64 -f "cert.pfx"
             openssl pkcs12 -in cert.pfx -nokeys -clcerts -password pass: -out cert.pem
             openssl pkcs12 -in cert.pfx -nocerts -password pass: -out key.pem -nodes
