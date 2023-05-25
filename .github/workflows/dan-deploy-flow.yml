@@ -106,7 +106,7 @@ jobs:
     if: ${{ !inputs.run_e2e_tests || needs.post-deploy-dev.result == 'success' }}
     runs-on: ubuntu-latest
     environment: 'staging'
-    needs: ['post-deploy-dev', 'deploy-dev']
+    needs: [deploy-dev]
     steps:
       - name: 'Download artifact for staging'
         uses: actions/download-artifact@v3
@@ -135,7 +135,7 @@ jobs:
     if: ${{ !inputs.run_e2e_tests || needs.post-deploy-staging.result == 'success' }}
     runs-on: ubuntu-latest
     environment: 'production'
-    needs: ['deploy-staging', 'post-deploy-staging']
+    needs: [deploy-staging]
     steps:
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
