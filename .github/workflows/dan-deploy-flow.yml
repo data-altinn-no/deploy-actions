@@ -102,8 +102,7 @@ jobs:
       kvname: ${{ secrets.KVNAME }}    
 
   
-  deploy-staging:
-    if: ${{ !inputs.run_e2e_tests || needs.post-deploy-dev.result == 'success' }}
+  deploy-staging:   
     runs-on: ubuntu-latest
     environment: 'staging'
     needs: [deploy-dev]
@@ -131,8 +130,7 @@ jobs:
       kvname: ${{ secrets.KVNAME }}
  
       
-  swap-staging-prod:
-    if: ${{ !inputs.run_e2e_tests || needs.post-deploy-staging.result == 'success' }}
+  swap-staging-prod:   
     runs-on: ubuntu-latest
     environment: 'production'
     needs: [deploy-staging]
