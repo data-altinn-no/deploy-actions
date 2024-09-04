@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
       - name: 'Dotnet restore, build & test'
@@ -69,7 +69,7 @@ jobs:
           dotnet publish -c '${{ inputs.build_configuration }}' --no-restore -o './published-app'
         working-directory: ${{ inputs.function_project_path }}
       - name: Upload artifact '${{ inputs.artifact_name }}'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.function_project_path }}/published-app
