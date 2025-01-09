@@ -81,7 +81,7 @@ jobs:
     needs: [build]
     steps:
       - name: 'Download artifact for dev'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
