@@ -6,7 +6,7 @@ on:
       dotnet_version:
         type: string
         required: false
-        default: '6.0.x'
+        default: '8.0.x'
       build_configuration:
         type: string
         default: 'Release'
