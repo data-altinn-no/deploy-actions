@@ -28,10 +28,6 @@ on:
         required: true
       publish_profile:
         required: true
-      resource_group_prod:
-        required: true
-      kvname:
-        required: false
 
 jobs:
   build:
@@ -74,6 +70,7 @@ jobs:
         with:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
+          sku: 'flexconsumption'
           publish-profile: ${{secrets.publish_profile}}  
   
   deploy-staging:   
@@ -91,6 +88,7 @@ jobs:
         with:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
+          sku: 'flexconsumption'
           publish-profile: ${{secrets.publish_profile}} 
 
   deploy-production:
@@ -103,10 +101,11 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
-      - name: 'Redeploy artifact to staging'
+      - name: 'Deploy artifact to prod'
         uses: azure/functions-action@v1
         with:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
+          sku: 'flexconsumption'
           publish-profile: ${{secrets.publish_profile}}
         
