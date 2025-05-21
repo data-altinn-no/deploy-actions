@@ -93,7 +93,7 @@ jobs:
 
   deploy-production:
     runs-on: ubuntu-latest
-    environment: 'prod'
+    environment: 'production'
     needs: [deploy-staging]
     steps:
       - name: 'Download artifact for deploy to production'
