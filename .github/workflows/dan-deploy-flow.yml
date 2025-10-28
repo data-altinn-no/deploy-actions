@@ -1,8 +1,8 @@
 name: Reusable dan deploy workflow
 
 permissions:
-      actions: read
-      contents: read
+  actions: read
+  contents: read
 
 on:
   workflow_call:
