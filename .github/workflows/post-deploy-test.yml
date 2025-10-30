@@ -16,6 +16,9 @@ on:
 jobs:
   post-deploy-tests:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
     environment: ${{ inputs.environment }}
     steps:
       - name: 'Checkout'
