@@ -75,7 +75,7 @@ jobs:
           dotnet publish -c '${{ inputs.build_configuration }}' --no-restore -o './published-app'
         working-directory: ${{ inputs.function_project_path }}
       - name: Upload artifact '${{ inputs.artifact_name }}'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ inputs.function_project_path }}/published-app
