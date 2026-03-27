@@ -59,8 +59,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # 5.2.0
         with:
           dotnet-version: ${{ inputs.dotnet_version }}
       - name: 'Dotnet restore, build & test'
@@ -87,12 +87,12 @@ jobs:
     needs: [build]
     steps:
       - name: 'Download artifact for dev'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
       - name: 'Deploy artifact to dev'
-        uses: azure/functions-action@v1
+        uses: azure/functions-action@02a16c5f3a5707fa97fca56c202cc2ef6cc7dccb # v1.5.4
         with:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
@@ -115,12 +115,12 @@ jobs:
     needs: [deploy-dev]
     steps:
       - name: 'Download artifact for staging'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
       - name: 'Deploy artifact to staging'
-        uses: azure/functions-action@v1
+        uses: azure/functions-action@02a16c5f3a5707fa97fca56c202cc2ef6cc7dccb # v1.5.4
         with:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
@@ -143,7 +143,7 @@ jobs:
     needs: [deploy-staging]
     steps:
       - name: 'Login via Azure CLI'
-        uses: azure/login@v1
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
         with:
           creds: ${{ secrets.azure_credentials }}
       - name: 'Swap staging and production'
@@ -159,12 +159,12 @@ jobs:
     needs: [swap-staging-prod]
     steps:
       - name: 'Download artifact for redeploy to staging'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ inputs.artifact_name }}
           path: './downloaded-app'
       - name: 'Redeploy artifact to staging'
-        uses: azure/functions-action@v1
+        uses: azure/functions-action@02a16c5f3a5707fa97fca56c202cc2ef6cc7dccb # v1.5.4
         with:
           app-name: ${{secrets.function_app_name}}
           package: './downloaded-app'
