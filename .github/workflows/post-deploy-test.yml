@@ -1,5 +1,11 @@
 name: Post deploy tests
 
+permissions:
+  actions: read
+  contents: read
+  checks: write
+  pull-requests: write
+
 on:
   workflow_call:
     inputs:
